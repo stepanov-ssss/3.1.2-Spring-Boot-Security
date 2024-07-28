@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
-    public void setUserAndRoleRepositories (UserRepositories userRepositories, RoleRepositories roleRepositories) {
+    public void setUserAndRoleRepositories(UserRepositories userRepositories, RoleRepositories roleRepositories) {
         this.userRepositories = userRepositories;
         this.roleRepositories = roleRepositories;
     }
@@ -59,7 +59,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserById(Long id, User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user1 = userRepositories.findByUsername(user.getUsername());
+        if (user1.getPassword().equals(user.getPassword())) {
+            user.setPassword(user1.getPassword());
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         userRepositories.save(user);
     }
 
